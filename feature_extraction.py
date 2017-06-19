@@ -18,10 +18,10 @@ def transfer_learning(last_layer, nb_classes):
     fc8W = tf.Variable(tf.random_normal(shape=shape, mean=mu, stddev=stddev))
     fc8b = tf.Variable(tf.random_normal(shape=[shape[1]], mean=mu, stddev=stddev))
     # find activation function
-    logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
+    # logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
+    logits = tf.nn.xw_plus_b(last_layer, fc8W, fc8b)
     # find softmax probabilities
     return tf.nn.softmax(logits)
-
 
 sign_names = pd.read_csv('signnames.csv')
 nb_classes = 43

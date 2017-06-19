@@ -1,10 +1,11 @@
 import numpy as np
 import tensorflow as tf
 
+# load alexnet weights
 net_data = np.load("bvlc-alexnet.npy", encoding="latin1").item()
 
 
-def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
+def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w, padding="VALID", group=1):
     '''
     From https://github.com/ethereon/caffe-tensorflow
     '''
@@ -43,11 +44,14 @@ def AlexNet(features, feature_extract=False):
     c_o = 96
     s_h = 4
     s_w = 4
+    # get weights
     conv1W = tf.Variable(net_data["conv1"][0])
     conv1b = tf.Variable(net_data["conv1"][1])
+    # apply convolution
     conv1_in = conv(features, conv1W, conv1b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=1)
+    # get activations
     conv1 = tf.nn.relu(conv1_in)
-
+    # normalize the activations
     # lrn1
     # lrn(2, 2e-05, 0.75, name='norm1')
     radius = 2
@@ -73,11 +77,14 @@ def AlexNet(features, feature_extract=False):
     s_h = 1
     s_w = 1
     group = 2
+    # get weights
     conv2W = tf.Variable(net_data["conv2"][0])
     conv2b = tf.Variable(net_data["conv2"][1])
+    # apply convolution
     conv2_in = conv(maxpool1, conv2W, conv2b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
+    # get activations
     conv2 = tf.nn.relu(conv2_in)
-
+    # normalize the activations
     # lrn2
     # lrn(2, 2e-05, 0.75, name='norm2')
     radius = 2
@@ -103,9 +110,12 @@ def AlexNet(features, feature_extract=False):
     s_h = 1
     s_w = 1
     group = 1
+    # get weights and biases
     conv3W = tf.Variable(net_data["conv3"][0])
     conv3b = tf.Variable(net_data["conv3"][1])
+    # apply convolution
     conv3_in = conv(maxpool2, conv3W, conv3b, k_h, k_w, c_o, s_h, s_w, padding="SAME", group=group)
+    # get activation
     conv3 = tf.nn.relu(conv3_in)
 
     # conv4
@@ -143,17 +153,24 @@ def AlexNet(features, feature_extract=False):
     padding = 'VALID'
     maxpool5 = tf.nn.max_pool(conv5, ksize=[1, k_h, k_w, 1], strides=[1, s_h, s_w, 1], padding=padding)
 
+    # flatten -- between convolution and fully connected layers
+    flat5 = tf.reshape(maxpool5, [-1, int(np.prod(maxpool5.get_shape()[1:]))])
+
     # fc6, 4096
     fc6W = tf.Variable(net_data["fc6"][0])
     fc6b = tf.Variable(net_data["fc6"][1])
-    flat5 = tf.reshape(maxpool5, [-1, int(np.prod(maxpool5.get_shape()[1:]))])
+    # get activations from activation functions
     fc6 = tf.nn.relu(tf.matmul(flat5, fc6W) + fc6b)
 
     # fc7, 4096
     fc7W = tf.Variable(net_data["fc7"][0])
     fc7b = tf.Variable(net_data["fc7"][1])
+    # get activations from activation functions
     fc7 = tf.nn.relu(tf.matmul(fc6, fc7W) + fc7b)
 
+    # when using this class for feature extraction..
+    # in case of trasfer learning we normally implement..
+    # the final layer ourselves
     if feature_extract:
         return fc7
 

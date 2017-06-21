@@ -17,8 +17,10 @@ def evaluate(features, labels, sess):
             y: y_batch,
             learn_rate: 0.001
         })
+        # x_batch.shape[0] --> features in a batch
         total_cost += (c * x_batch.shape[0])
         total_accuracy += (a * x_batch.shape[0])
+        # feature.shape[0] --> total features
     return total_cost / features.shape[0], total_accuracy / features.shape[0]
 
 
@@ -48,7 +50,7 @@ print("classes: {}".format(nb_classes))
 learn_rate = tf.placeholder(tf.float32)
 logits, fc8W, fc8b = transfer_learning(fc7, nb_classes)
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=one_hot_y)
-cost = tf.reduce_mean(cross_entropy)
+cost = tf.reduce_mean(cross_entropy)  # --> loss
 optimizer = tf.train.AdamOptimizer(learning_rate=learn_rate).minimize(cost, var_list=[fc8W, fc8b])
 correct_prediction = tf.equal(tf.argmax(logits, axis=1), tf.argmax(one_hot_y, axis=1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -56,7 +58,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 init = tf.global_variables_initializer()
 with tf.Session() as sess:
     sess.run(init)
-    # 10 epochs
     for e in range(1):
         batch = get_batches(x_train, y_train, 128)
         for x_batch, y_batch in batch:

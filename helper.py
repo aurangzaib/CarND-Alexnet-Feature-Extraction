@@ -65,10 +65,10 @@ def get_data_summary(feature, label):
     return image_shape[0], image_shape[2], n_classes, n_samples
 
 
-def transfer_learning(last_layer, n_classes):
+def transfer_learning(previous_layer, n_classes):
     import tensorflow as tf
     # get the shape of layer 7
-    shape = (last_layer.get_shape().as_list()[-1], n_classes)  # use this shape for the weight matrix
+    shape = (previous_layer.get_shape().as_list()[-1], n_classes)  # use this shape for the weight matrix
     # defined mean and stddev
     mu, stddev = 0, 0.1
     # weight and bias for output layer
@@ -76,4 +76,4 @@ def transfer_learning(last_layer, n_classes):
     fc8b = tf.Variable(tf.random_normal(shape=[shape[1]], mean=mu, stddev=stddev))
     # find activation function
     # logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
-    return tf.nn.xw_plus_b(last_layer, fc8W, fc8b), fc8W, fc8b
+    return tf.nn.xw_plus_b(previous_layer, fc8W, fc8b), fc8W, fc8b

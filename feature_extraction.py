@@ -9,17 +9,16 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-def transfer_learning(last_layer, nb_classes):
+def transfer_learning(previous_layer, nb_classes):
     # get the shape of layer 7
-    shape = (last_layer.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
+    shape = (previous_layer.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
     # defined mean and stddev
     mu, stddev = 0, 0.1
     # weight and bias for output layer
     fc8W = tf.Variable(tf.random_normal(shape=shape, mean=mu, stddev=stddev))
     fc8b = tf.Variable(tf.random_normal(shape=[shape[1]], mean=mu, stddev=stddev))
     # find activation function
-    # logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
-    logits = tf.nn.xw_plus_b(last_layer, fc8W, fc8b)
+    logits = tf.nn.xw_plus_b(previous_layer, fc8W, fc8b)
     # find softmax probabilities
     return tf.nn.softmax(logits)
 

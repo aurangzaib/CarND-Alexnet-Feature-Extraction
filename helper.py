@@ -105,3 +105,16 @@ def read_images(name1, name2):
     im2 = im2 - np.mean(im2)
 
     return im1, im2
+
+
+def implement_feature_extraction(previous_layer, n_classes):
+    import tensorflow as tf
+    mu = 0
+    stddev = 0.1
+    image_shape = [previous_layer.get_shape().as_list()[-1], n_classes]
+    print("image shape: {}".format(image_shape))
+    w = tf.Variable(tf.random_normal(shape=image_shape, mean=mu, stddev=stddev))
+    b = tf.Variable(tf.random_normal(shape=[n_classes], mean=mu, stddev=stddev))
+    y = tf.nn.xw_plus_b(previous_layer, w, b)
+    probs = tf.nn.softmax(logits=y)
+    return probs

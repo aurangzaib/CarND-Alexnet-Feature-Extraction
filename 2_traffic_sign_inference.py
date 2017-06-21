@@ -2,7 +2,7 @@
 using Alexnet pre-trained network for
 inference of traffic signs
 """
-from helper import print_output, read_images
+from helper import read_images, print_output
 from alexnet import AlexNet
 import tensorflow as tf
 

@@ -77,3 +77,29 @@ def transfer_learning(previous_layer, n_classes):
     # find activation function
     # logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
     return tf.nn.xw_plus_b(previous_layer, fc8W, fc8b), fc8W, fc8b
+
+
+def print_output(output):
+    from caffe_classes import class_names
+    import numpy as np
+
+    for input_im_ind in range(output.shape[0]):
+        inds = np.argsort(output)[input_im_ind, :]
+        print("Image", input_im_ind)
+        for i in range(5):
+            print("%s: %.3f" % (class_names[inds[-1 - i]], output[input_im_ind, inds[-1 - i]]))
+
+
+def read_images():
+    from scipy.misc import imread
+    import numpy as np
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+    im1 = imread("poodle.png")
+    im1 = (im1[:, :, :3]).astype(np.float32)
+    im1 = im1 - np.mean(im1)
+
+    im2 = imread("weasel.png")
+    im2 = (im2[:, :, :3]).astype(np.float32)
+    im2 = im2 - np.mean(im2)
+    return im1, im2

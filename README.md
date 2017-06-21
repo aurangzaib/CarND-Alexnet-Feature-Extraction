@@ -11,3 +11,9 @@ Before you start the lab, you should first install:
 * SciPy
 * matplotlib
 
+## What to do
+In this repo, we have used AlexNeT in two ways:
+
+1- Inference.
+
+2- Feature Extraction.

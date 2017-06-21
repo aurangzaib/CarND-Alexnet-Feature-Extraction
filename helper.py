@@ -90,16 +90,18 @@ def print_output(output):
             print("%s: %.3f" % (class_names[inds[-1 - i]], output[input_im_ind, inds[-1 - i]]))
 
 
-def read_images():
+def read_images(name1, name2):
     from scipy.misc import imread
     import numpy as np
     import os
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-    im1 = imread("poodle.png")
-    im1 = (im1[:, :, :3]).astype(np.float32)
+
+    im1 = imread("images/" + name1)
+    im1 = (im1[:, :, :3]).astype(np.float32)  # 3 channels
     im1 = im1 - np.mean(im1)
 
-    im2 = imread("weasel.png")
-    im2 = (im2[:, :, :3]).astype(np.float32)
+    im2 = imread("images/" + name2)
+    im2 = (im2[:, :, :3]).astype(np.float32)  # 3 channels
     im2 = im2 - np.mean(im2)
+
     return im1, im2

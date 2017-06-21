@@ -37,46 +37,32 @@ def pre_process(features, labels, is_train=False):
     return features, labels
 
 
-def get_batches(features, labels, _batch_size_):
+def get_batches(features, labels, batch_size):
     from sklearn.utils import shuffle
     import math
     features, labels = shuffle(features, labels)
     total_size, index, batch = len(features), 0, []
-    n_batches = int(math.ceil(total_size / _batch_size_)) if _batch_size_ > 0 else 0
+    n_batches = int(math.ceil(total_size / batch_size)) if batch_size > 0 else 0
     for _i_ in range(n_batches - 1):
-        batch.append([features[index:index + _batch_size_],
-                      labels[index:index + _batch_size_]])
-        index += _batch_size_
+        batch.append([features[index:index + batch_size],
+                      labels[index:index + batch_size]])
+        index += batch_size
     batch.append([features[index:], labels[index:]])
     return batch
 
 
-def get_data_summary(feature, label):
+def get_data_summary(features, labels):
     import numpy as np
     # What's the shape of an traffic sign image?
-    image_shape = feature[0].shape
+    image_shape = features[0].shape
     # How many unique classes/labels there are in the dataset.
-    unique_classes, n_samples = np.unique(label,
+    unique_classes, n_samples = np.unique(labels,
                                           return_index=False,
                                           return_inverse=False,
                                           return_counts=True)
     n_classes = len(unique_classes)
     n_samples = n_samples.tolist()
     return image_shape[0], image_shape[2], n_classes, n_samples
-
-
-def transfer_learning(previous_layer, n_classes):
-    import tensorflow as tf
-    # get the shape of layer 7
-    shape = (previous_layer.get_shape().as_list()[-1], n_classes)  # use this shape for the weight matrix
-    # defined mean and stddev
-    mu, stddev = 0, 0.1
-    # weight and bias for output layer
-    fc8W = tf.Variable(tf.random_normal(shape=shape, mean=mu, stddev=stddev))
-    fc8b = tf.Variable(tf.random_normal(shape=[shape[1]], mean=mu, stddev=stddev))
-    # find activation function
-    # logits = tf.add(tf.matmul(last_layer, fc8W), fc8b)
-    return tf.nn.xw_plus_b(previous_layer, fc8W, fc8b), fc8W, fc8b
 
 
 def print_output(output):
@@ -107,14 +93,34 @@ def read_images(name1, name2):
     return im1, im2
 
 
-def implement_feature_extraction(previous_layer, n_classes):
+def implement_feature_extraction(network, n_classes, with_prob=True):
     import tensorflow as tf
-    mu = 0
-    stddev = 0.1
-    image_shape = [previous_layer.get_shape().as_list()[-1], n_classes]
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+    mu, stddev = 0, 0.1
+    image_shape = (network.get_shape().as_list()[-1], n_classes)
     print("image shape: {}".format(image_shape))
     w = tf.Variable(tf.random_normal(shape=image_shape, mean=mu, stddev=stddev))
     b = tf.Variable(tf.random_normal(shape=[n_classes], mean=mu, stddev=stddev))
-    y = tf.nn.xw_plus_b(previous_layer, w, b)
+    y = tf.nn.xw_plus_b(network, w, b)
+    if with_prob is False:
+        return y, w, b
     probs = tf.nn.softmax(logits=y)
     return probs
+
+
+def evaluate(features, labels, cost, accuracy, x, y, sess):
+    total_cost = 0
+    total_accuracy = 0
+    batches = get_batches(features, labels, 128)
+    for x_batch, y_batch in batches:
+        c, a = sess.run([cost, accuracy], feed_dict={
+            x: x_batch,
+            y: y_batch
+        })
+        # x_batch.shape[0] --> features in a batch
+        total_cost += (c * x_batch.shape[0])
+        total_accuracy += (a * x_batch.shape[0])
+        # feature.shape[0] --> total features
+    return total_cost / features.shape[0], total_accuracy / features.shape[0]

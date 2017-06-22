@@ -1,3 +1,10 @@
+"""
+you are given Alexnet pre-trained network.
+use it for transfer learning with feature extraction.
+last layer is replaced and weights are retrained.
+other weights are frozen.
+loss, accuracy and updated weights are found.
+"""
 from sklearn.model_selection import train_test_split
 from alexnet import AlexNet
 import tensorflow as tf
@@ -5,10 +12,7 @@ from helper import *
 
 x_train, y_train = load_data('train.p')
 x_train, y_train = pre_process(x_train, y_train, is_train=True)
-x_train, x_test, y_train, y_test = train_test_split(x_train,
-                                                    y_train,
-                                                    test_size=0.2,
-                                                    random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=42)
 h, channels, n_classes, n_samples = get_data_summary(x_train, y_train)
 
 x = tf.placeholder(tf.float32, [None, h, h, channels])

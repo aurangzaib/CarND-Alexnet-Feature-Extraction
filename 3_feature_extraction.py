@@ -1,7 +1,7 @@
 """
-using Alexnet pre-trained network for
-feature extraction
-last layer is replaced and weights are retrained
+you are given Alexnet pre-trained network.
+use it for transfer learning with feature extraction.
+last layer is replaced and weights are retrained.
 """
 from helper import read_images, print_output, implement_feature_extraction
 from alexnet import AlexNet

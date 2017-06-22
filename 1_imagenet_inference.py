@@ -1,6 +1,6 @@
 """
-using Alexnet pre-trained network for
-inference of animal images
+you are given Alexnet pre-trained network.
+use it for inference of animal images.
 """
 from helper import read_images, print_output
 from alexnet import AlexNet

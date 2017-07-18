@@ -1,5 +1,5 @@
 """
-you are given Alexnet pre-trained network.
+you are given Alexnet network with pre-trained weights (alexnet.py uses bvlx-alexnet.npy).
 use it for transfer learning with feature extraction.
 last layer is replaced and weights are retrained.
 """
@@ -12,8 +12,8 @@ n_classes = 43
 x = tf.placeholder(tf.float32, [None, 32, 32, 3])
 # Alexnet requires (227,277,3)
 resized = tf.image.resize_images(x, [227, 227])
-previous_layer = AlexNet(resized, feature_extract=True)
-probs = implement_feature_extraction(previous_layer, n_classes)
+network = AlexNet(resized, feature_extract=True)
+probs = implement_feature_extraction(network, n_classes)
 init = tf.global_variables_initializer()
 with tf.Session() as sess:
     sess.run(init)

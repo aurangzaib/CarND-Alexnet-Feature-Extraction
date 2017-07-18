@@ -1,5 +1,5 @@
 """
-you are given Alexnet pre-trained network.
+you are given Alexnet network with pre-trained weights (alexnet.py uses bvlx-alexnet.npy).
 use it for transfer learning with feature extraction.
 last layer is replaced and weights are retrained.
 other weights are frozen.

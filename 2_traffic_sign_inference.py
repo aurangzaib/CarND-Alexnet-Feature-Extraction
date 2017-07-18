@@ -1,5 +1,5 @@
 """
-you are given Alexnet pre-trained network.
+you are given Alexnet network with pre-trained weights (alexnet.py uses bvlx-alexnet.npy).
 use it for inference of traffic signs.
 """
 from helper import read_images, print_output

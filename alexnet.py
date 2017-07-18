@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-# load alexnet weights
+# load alexnet pre trained weights
 net_data = np.load("bvlc-alexnet.npy", encoding="latin1").item()
 
 

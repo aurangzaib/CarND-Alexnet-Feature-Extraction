@@ -73,7 +73,8 @@ def print_output(output):
         inds = np.argsort(output)[input_im_ind, :]
         print("Image", input_im_ind)
         for i in range(5):
-            print("%s: %.3f" % (class_names[inds[-1 - i]], output[input_im_ind, inds[-1 - i]]))
+            print("%s: %.3f" % (class_names[inds[-1 - i]],
+                                output[input_im_ind, inds[-1 - i]]))
 
 
 def read_images(name1, name2):
@@ -103,10 +104,10 @@ def implement_feature_extraction(network, n_classes, with_prob=True):
     print("image shape: {}".format(image_shape))
     w = tf.Variable(tf.random_normal(shape=image_shape, mean=mu, stddev=stddev))
     b = tf.Variable(tf.random_normal(shape=[n_classes], mean=mu, stddev=stddev))
-    y = tf.nn.xw_plus_b(network, w, b)
+    logits = tf.nn.xw_plus_b(network, w, b)
     if with_prob is False:
-        return y, w, b
-    probs = tf.nn.softmax(logits=y)
+        return logits, w, b
+    probs = tf.nn.softmax(logits=logits)
     return probs
 
 
@@ -122,5 +123,5 @@ def evaluate(features, labels, cost, accuracy, x, y, sess):
         # x_batch.shape[0] --> features in a batch
         total_cost += (c * x_batch.shape[0])
         total_accuracy += (a * x_batch.shape[0])
-        # feature.shape[0] --> total features
+        # features.shape[0] --> total features
     return total_cost / features.shape[0], total_accuracy / features.shape[0]
